@@ -1,0 +1,35 @@
+import java.util.Scanner;
+
+public class MainApp {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        DepartamentoManager departamentoManager = new DepartamentoManager();
+
+        while (true) {
+            System.out.println("Selecciona una opción:");
+            System.out.println("1. Listar departamentos");
+            System.out.println("2. Asignar departamento a profesor");
+            System.out.println("3. Salir");
+
+            int opcion = scanner.nextInt();
+
+            switch (opcion) {
+                case 1:
+                    departamentoManager.listarDepartamentos();
+                    break;
+                case 2:
+                    departamentoManager.asignarDepartamento();
+                    break;
+                case 3:
+                    System.out.println("Saliendo del programa.");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Opción no válida. Inténtalo de nuevo.");
+            }
+        }
+    }
+}
+
+

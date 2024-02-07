@@ -1,0 +1,190 @@
+/* BASE DATOS*/
+
+CREATE DATABASE matriculas;
+use matriculas;
+CREATE TABLE `programas` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(255) NOT NULL,
+    `nivel` VARCHAR(255) NOT NULL
+);
+CREATE TABLE `periodo` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `codigo` INT NOT NULL,
+    `ano` DATE NOT NULL,
+    `semestre` INT NOT NULL
+);
+CREATE TABLE `persona` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `t_documento` VARCHAR(255) NOT NULL,
+    `n_documento` INT NOT NULL,
+    `nombres` VARCHAR(255) NOT NULL,
+    `apellidos` VARCHAR(255) NOT NULL,
+    `ciudad_residencia` VARCHAR(255) NOT NULL,
+    `direccion` VARCHAR(255) NOT NULL,
+    `telefono` INT NOT NULL,
+    `f_nacimiento` DATE NOT NULL,
+    `sexo` VARCHAR(255) NOT NULL
+);
+CREATE TABLE `alumnos` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id_persona` INT NOT NULL,
+    FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id`)
+);
+CREATE TABLE `departamento` (
+     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, `nombre` VARCHAR(32) );
+CREATE TABLE `profesores` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id_persona` INT NOT NULL,
+    `id_departamento` INT NOT NULL,
+    FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id`),
+    FOREIGN KEY (`id_departamento`) REFERENCES `departamento` (`id`)
+);
+CREATE TABLE `creditos` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `valorxasignatura` DOUBLE NOT NULL
+);
+CREATE TABLE `asignaturas` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id_profesor` INT NOT NULL,
+    `id_periodo` INT NOT NULL,
+    `id_programa` INT NOT NULL,
+    `nombre` VARCHAR(255) NOT NULL,
+    `id_creditos` INT NOT NULL,
+    `lugares_disponibles` VARCHAR(255) NOT NULL,
+    `id_horario` INT NOT NULL,
+    `id_salon` INT NOT NULL
+);
+CREATE TABLE `curso` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(255) NOT NULL,
+    `guia_catedra` VARCHAR(255) NOT NULL,
+    `id_asignatura` INT NOT NULL,
+    FOREIGN KEY (`id_asignatura`) REFERENCES `asignaturas` (`id`)
+);
+CREATE TABLE `matriculas` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id_alumno` INT NOT NULL,
+    `id_curso` INT NOT NULL
+);
+CREATE TABLE `tarifas` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id_matricula` INT NOT NULL,
+    `valor` DOUBLE NOT NULL,
+    FOREIGN KEY (`id_matricula`) REFERENCES `matriculas` (`id`)
+);
+CREATE TABLE `edificios` (
+    `id` INT  NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `piso` VARCHAR(255) NOT NULL,
+    `cantidad_salones` INT NOT NULL
+);
+CREATE TABLE `salones` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id_edificio` INT NOT NULL,
+    `nombre` VARCHAR(255) NOT NULL,
+    `capacidad` INT NOT NULL
+);
+CREATE TABLE `direccion` (
+    `id` INT  NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id_persona` INT NOT NULL,
+    `tipo_calle` INT NOT NULL,
+    `numero` INT NOT NULL,
+    FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id`)
+);
+CREATE TABLE `horarios` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `dia` VARCHAR(20) NOT NULL,
+    `hora_inicio` TIME NOT NULL,
+    `hora_fin` TIME NOT NULL
+);
+
+/* ALTER TABLES*/
+
+ALTER TABLE `matriculas` ADD CONSTRAINT `matriculas_id_alumno_foreign` FOREIGN KEY (`id_alumno`) REFERENCES `alumnos` (`id`);
+ALTER TABLE `tarifas` ADD CONSTRAINT `tarifas_id_matricula_foreign` FOREIGN KEY (`id_matricula`) REFERENCES `matriculas` (`id`);
+ALTER TABLE `profesores` ADD CONSTRAINT `profesores_id_persona_foreign` FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id`);
+ALTER TABLE `profesores` ADD CONSTRAINT `profesores_id_departamento_foreign` FOREIGN KEY (`id_departamento`) REFERENCES `departamento` (`id`);
+ALTER TABLE `curso` ADD CONSTRAINT `curso_id_asignatura_foreign` FOREIGN KEY (`id_asignatura`) REFERENCES `asignaturas` (`id`);
+ALTER TABLE `asignaturas` ADD CONSTRAINT `asignaturas_id_profesor_foreign` FOREIGN KEY (`id_profesor`) REFERENCES `profesores` (`id`);
+ALTER TABLE `asignaturas` ADD CONSTRAINT `asignaturas_id_periodo_foreign` FOREIGN KEY (`id_periodo`) REFERENCES `periodo` (`id`);
+ALTER TABLE `asignaturas` ADD CONSTRAINT `asignaturas_id_programa_foreign` FOREIGN KEY (`id_programa`) REFERENCES `programas` (`id`);
+ALTER TABLE `asignaturas` ADD CONSTRAINT `asignaturas_id_creditos_foreign` FOREIGN KEY (`id_creditos`) REFERENCES `creditos` (`id`);
+ALTER TABLE `asignaturas` ADD CONSTRAINT `asignaturas_id_horarios` FOREIGN KEY (`id_horario`) REFERENCES `horarios` (`id`);
+ALTER TABLE `matriculas` ADD CONSTRAINT `matriculas_id_curso_foreign` FOREIGN KEY (`id_curso`) REFERENCES `curso` (`id`);
+ALTER TABLE `salones` ADD CONSTRAINT `salones_id_edificio_foreign` FOREIGN KEY (`id_edificio`) REFERENCES `edificios` (`id`);
+
+/* INSERTS */ 
+
+INSERT INTO `programas` (`nombre`, `nivel`) VALUES
+    ('Ingeniería Informática', 'Licenciatura'),
+    ('Ciencias de Datos', 'Maestría'),
+    ('Diseño Gráfico', 'Licenciatura');
+
+INSERT INTO `periodo` (`codigo`, `ano`, `semestre`) VALUES
+    (202110, '2021-09-01', 1),
+    (202120, '2022-01-01', 2),
+    (202210, '2022-09-01', 1);
+
+INSERT INTO `persona` (`t_documento`, `n_documento`, `nombres`, `apellidos`, `ciudad_residencia`, `direccion`, `telefono`, `f_nacimiento`, `sexo`) VALUES
+    ('DNI', 12345678, 'Juan', 'Pérez', 'Ciudad A', 'Calle 123', 123456789, '1990-05-15', 'Masculino'),
+    ('Cédula', 87654321, 'María', 'Gómez', 'Ciudad B', 'Calle 456', 987654321, '1988-08-25', 'Femenino'),
+    ('Pasaporte', 54321678, 'Carlos', 'López', 'Ciudad C', 'Calle 789', 456789012, '1995-03-10', 'Masculino');
+
+INSERT INTO `alumnos` (`id_persona`) VALUES
+    (1),
+    (2),
+    (3);
+
+INSERT INTO `departamento` (`nombre`) VALUES
+    ('Departamento de Ingeniería'),
+    ('Departamento de Ciencias de Datos'),
+    ('Departamento de Diseño');
+
+INSERT INTO `profesores` (`id_persona`, `id_departamento`) VALUES
+    (1, 101),
+    (2, 102),
+    (3, 103);
+
+INSERT INTO `creditos` (`valorxasignatura`) VALUES
+    (3.0),
+    (4.5),
+    (3.0);
+
+INSERT INTO `asignaturas` (`id_profesor`, `id_periodo`, `id_programa`, `nombre`, `id_creditos`, `lugares_disponibles`, `id_horario`, `id_salon`) VALUES
+    (1, 1, 1, 'Introducción a la Programación', 3, '25', 1, 1),
+    (2, 2, 2, 'Análisis de Datos Avanzado', 4.5, '20', 2, 2),
+    (3, 3, 3, 'Diseño de Interfaces Gráficas', 3, '30', 3, 3);
+
+INSERT INTO `curso` (`nombre`, `guia_catedra`, `id_asignatura`) VALUES
+    ('Programación Avanzada', 'Guía 1', 1),
+    ('Análisis de Datos', 'Guía 2', 2),
+    ('Diseño Gráfico Avanzado', 'Guía 3', 3);
+
+INSERT INTO `matriculas` (`id_alumno`, `id_curso`) VALUES
+    (1, 1),
+    (2, 2),
+    (3, 3);
+
+INSERT INTO `tarifas` (`id_matricula`, `valor`) VALUES
+    (1, 500.0),
+    (2, 600.0),
+    (3, 550.0);
+
+INSERT INTO `salones` (`id_edificio`, `nombre`, `capacidad`) VALUES
+    (1, 'A101', 30),
+    (2, 'B205', 25),
+    (3, 'C301', 40);
+
+INSERT INTO `edificios` (`piso`, `cantidad_salones`) VALUES
+    ('A', 10),
+    ('B', 8),
+    ('C', 12);
+
+INSERT INTO `direccion` (`id_persona`, `tipo_calle`, `numero`) VALUES
+    (1, 'Calle', 123),
+    (2, 'Avenida', 456),
+    (3, 'Pasaje', 789);
+
+INSERT INTO `horarios` (`dia`, `hora_inicio`, `hora_fin`) VALUES
+    ('Lunes', '08:00:00', '10:00:00'),
+    ('Miércoles', '14:00:00', '16:00:00'),
+    ('Viernes', '10:30:00', '12:30:00');

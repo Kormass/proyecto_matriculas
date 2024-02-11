@@ -99,7 +99,6 @@ CREATE TABLE `horarios` (
     `hora_fin` TIME NOT NULL
 );
 
-/* ALTER TABLES*/
 
 ALTER TABLE `matriculas` ADD CONSTRAINT `matriculas_id_alumno_foreign` FOREIGN KEY (`id_alumno`) REFERENCES `alumnos` (`id`);
 ALTER TABLE `tarifas` ADD CONSTRAINT `tarifas_id_matricula_foreign` FOREIGN KEY (`id_matricula`) REFERENCES `matriculas` (`id`);
@@ -114,12 +113,10 @@ ALTER TABLE `asignaturas` ADD CONSTRAINT `asignaturas_id_horarios` FOREIGN KEY (
 ALTER TABLE `matriculas` ADD CONSTRAINT `matriculas_id_curso_foreign` FOREIGN KEY (`id_curso`) REFERENCES `curso` (`id`);
 ALTER TABLE `salones` ADD CONSTRAINT `salones_id_edificio_foreign` FOREIGN KEY (`id_edificio`) REFERENCES `edificios` (`id`);
 
-/* INSERTS */ 
-
 INSERT INTO `programas` (`nombre`, `nivel`) VALUES
-    ('Ingeniería Informática', 'Licenciatura'),
-    ('Ciencias de Datos', 'Maestría'),
-    ('Diseño Gráfico', 'Licenciatura');
+    ('Ingeniería Informática', '1'),
+    ('Ciencias de Datos', '1'),
+    ('Diseño Gráfico', '2');
 
 INSERT INTO `periodo` (`codigo`, `ano`, `semestre`) VALUES
     (202110, '2021-09-01', 1),
@@ -142,51 +139,53 @@ INSERT INTO `departamento` (`nombre`) VALUES
     ('Departamento_de_Diseño');
 
 INSERT INTO `profesores` (`id_persona`, `id_departamento`) VALUES
-    (1, 101),
-    (2, 102),
-    (3, 103);
+    (1, 1),
+    (2, 2),
+    (3, 3);
 
-INSERT INTO `creditos` (`valorxasignatura`,`asignatura`) VALUES
-    (3.0),
-    (4.5),
-    (3.0);
+INSERT INTO `creditos` (`valorcredito`,`asignatura`) VALUES
+    (3.0,2),
+    (4.5,1),
+    (3.0,3);
+
+INSERT INTO `horarios` (`dia`, `hora_inicio`, `hora_fin`) VALUES
+    ('Lunes', '08:00:00', '10:00:00'),
+    ('Miércoles', '14:00:00', '16:00:00'),
+    ('Viernes', '10:30:00', '12:30:00');
 
 INSERT INTO `asignaturas` (`id_profesor`, `id_periodo`, `id_programa`, `nombre`, `id_creditos`, `lugares_disponibles`, `id_horario`, `id_salon`) VALUES
     (1, 1, 1, 'Introducción a la Programación', 3, '25', 1, 1),
-    (2, 2, 2, 'Análisis de Datos Avanzado', 4.5, '20', 2, 2),
-    (3, 3, 3, 'Diseño de Interfaces Gráficas', 3, '30', 3, 3);
+    (2, 2, 2, 'Análisis de Datos Avanzado', 1, '20', 2, 2),
+    (3, 3, 3, 'Diseño de Interfaces Gráficas', 2, '30', 3, 3);
 
 INSERT INTO `curso` (`nombre`, `guia_catedra`, `id_asignatura`) VALUES
     ('Programación Avanzada', 'Guía 1', 1),
     ('Análisis de Datos', 'Guía 2', 2),
-    ('Diseño Gráfico Avanzado', 'Guía 3', 3);
+    ('Diseño Gráfico Avanzado', 'Guía 3', 2);
 
-INSERT INTO `matriculas` (`id_alumno`) VALUES
-    (1),
+INSERT INTO `matriculas` (`id_curso`,`id_alumno`) VALUES
+    (1, 2),
     (2, 2),
     (3, 3);
 
-INSERT INTO `tarifas` (`valor`) VALUES
-    (500.0),
-    (600.0),
-    (550.0);
-
-INSERT INTO `salones` (`id_edificio`, `nombre`, `capacidad`) VALUES
-    (1, 'A101', 30),
-    (2, 'B205', 25),
-    (3, 'C301', 40);
+INSERT INTO `tarifas` (`id_matricula`,`valor`) VALUES
+    (1,500.0),
+    (2,600.0),
+    (3,550.0);
 
 INSERT INTO `edificios` (`piso`, `cantidad_salones`) VALUES
     ('A', 10),
     ('B', 8),
     ('C', 12);
 
-INSERT INTO `direccion` (`id_persona`, `tipo_calle`, `numero`) VALUES
-    (1, 'Calle', 123),
-    (2, 'Avenida', 456),
-    (3, 'Pasaje', 789);
+INSERT INTO `salones` (`id_edificio`, `nombre`, `capacidad`) VALUES
+    (1, 'A101', 30),
+    (2, 'B205', 25),
+    (3, 'C301', 40);
 
-INSERT INTO `horarios` (`dia`, `hora_inicio`, `hora_fin`) VALUES
-    ('Lunes', '08:00:00', '10:00:00'),
-    ('Miércoles', '14:00:00', '16:00:00'),
-    ('Viernes', '10:30:00', '12:30:00');
+INSERT INTO `direccion` (`id_persona`, `tipo_calle`, `numero`,`ciudad_residencia`) VALUES
+    (1, 'Calle', 123, 'Bucaramanga'),
+    (2, 'Avenida', 456, 'Floridablanca'),
+    (3, 'Pasaje', 789, 'Giron');
+
+

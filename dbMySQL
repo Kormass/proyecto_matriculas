@@ -5,7 +5,7 @@ use matriculas;
 CREATE TABLE `programas` (
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `nombre` VARCHAR(255) NOT NULL,
-    `nivel` VARCHAR(255) NOT NULL
+    `nivel` INT NOT NULL
 );
 CREATE TABLE `periodo` (
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -31,6 +31,7 @@ CREATE TABLE `alumnos` (
 );
 CREATE TABLE `departamento` (
      `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY, `nombre` VARCHAR(32) );
+
 CREATE TABLE `profesores` (
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `id_persona` INT NOT NULL,
@@ -40,7 +41,8 @@ CREATE TABLE `profesores` (
 );
 CREATE TABLE `creditos` (
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `valorxasignatura` DOUBLE NOT NULL
+    `valorcredito` DOUBLE NOT NULL,
+    `asignatura` VARCHAR(32) NOT NULL
 );
 CREATE TABLE `asignaturas` (
     `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -85,7 +87,7 @@ CREATE TABLE `salones` (
 CREATE TABLE `direccion` (
     `id` INT  NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `id_persona` INT NOT NULL,
-    `tipo_calle` INT NOT NULL,
+    `tipo_calle` VARCHAR(32) NOT NULL,
     `numero` INT NOT NULL,
     `ciudad_residencia` VARCHAR(255) NOT NULL,
     FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id`)
@@ -135,16 +137,16 @@ INSERT INTO `alumnos` (`id_persona`) VALUES
     (3);
 
 INSERT INTO `departamento` (`nombre`) VALUES
-    ('Departamento de Ingeniería'),
-    ('Departamento de Ciencias de Datos'),
-    ('Departamento de Diseño');
+    ('Ingeniería'),
+    ('Ciencias_de_Datos'),
+    ('Departamento_de_Diseño');
 
 INSERT INTO `profesores` (`id_persona`, `id_departamento`) VALUES
     (1, 101),
     (2, 102),
     (3, 103);
 
-INSERT INTO `creditos` (`valorxasignatura`) VALUES
+INSERT INTO `creditos` (`valorxasignatura`,`asignatura`) VALUES
     (3.0),
     (4.5),
     (3.0);
@@ -159,15 +161,15 @@ INSERT INTO `curso` (`nombre`, `guia_catedra`, `id_asignatura`) VALUES
     ('Análisis de Datos', 'Guía 2', 2),
     ('Diseño Gráfico Avanzado', 'Guía 3', 3);
 
-INSERT INTO `matriculas` (`id_alumno`, `id_curso`) VALUES
-    (1, 1),
+INSERT INTO `matriculas` (`id_alumno`) VALUES
+    (1),
     (2, 2),
     (3, 3);
 
-INSERT INTO `tarifas` (`id_matricula`, `valor`) VALUES
-    (1, 500.0),
-    (2, 600.0),
-    (3, 550.0);
+INSERT INTO `tarifas` (`valor`) VALUES
+    (500.0),
+    (600.0),
+    (550.0);
 
 INSERT INTO `salones` (`id_edificio`, `nombre`, `capacidad`) VALUES
     (1, 'A101', 30),

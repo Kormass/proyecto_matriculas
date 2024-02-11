@@ -124,10 +124,10 @@ INSERT INTO `periodo` (`codigo`, `ano`, `semestre`) VALUES
     (202120, '2022-01-01', 2),
     (202210, '2022-09-01', 1);
 
-INSERT INTO `persona` (`t_documento`, `n_documento`, `nombres`, `apellidos`, `ciudad_residencia`, `direccion`, `telefono`, `f_nacimiento`, `sexo`) VALUES
-    ('DNI', 12345678, 'Juan', 'Pérez', 'Ciudad A', 'Calle 123', 123456789, '1990-05-15', 'Masculino'),
-    ('Cédula', 87654321, 'María', 'Gómez', 'Ciudad B', 'Calle 456', 987654321, '1988-08-25', 'Femenino'),
-    ('Pasaporte', 54321678, 'Carlos', 'López', 'Ciudad C', 'Calle 789', 456789012, '1995-03-10', 'Masculino');
+INSERT INTO `persona` (`t_documento`, `n_documento`, `nombres`, `apellidos`, `direccion`, `telefono`, `f_nacimiento`, `sexo`) VALUES
+    ('DNI', 12345678, 'Juan', 'Pérez', 'Calle 123', 123456789, '1990-05-15', 'Masculino'),
+    ('Cédula', 87654321, 'María', 'Gómez', 'Calle 456', 987654321, '1988-08-25', 'Femenino'),
+    ('Pasaporte', 54321678, 'Carlos', 'López', 'Calle 789', 456789012, '1995-03-10', 'Masculino');
 
 INSERT INTO `alumnos` (`id_persona`) VALUES
     (1),

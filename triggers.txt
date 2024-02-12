@@ -1,0 +1,174 @@
+-- Trigger para validar la capacidad del salón antes de matricular a un alumno
+DELIMITER //
+DELIMITER //
+CREATE TRIGGER before_insert_matricula
+BEFORE INSERT ON matriculas
+FOR EACH ROW
+BEGIN
+    DECLARE capacidad_saloon INT;
+
+    SELECT capacidad INTO capacidad_saloon
+    FROM salones
+    WHERE id = (SELECT id_salon FROM asignaturas WHERE id = (SELECT id_asignatura FROM curso WHERE id = NEW.id_curso));
+
+    IF capacidad_saloon IS NOT NULL AND capacidad_saloon <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El salón seleccionado no tiene capacidad suficiente.';
+    END IF;
+END;
+//
+DELIMITER ;
+//
+DELIMITER ;
+
+-- Trigger para actualizar la cantidad de salones al eliminar un salón
+DELIMITER //
+CREATE TRIGGER after_delete_salon
+AFTER DELETE ON salones
+FOR EACH ROW
+BEGIN
+    UPDATE edificios
+    SET cantidad_salones = cantidad_salones - 1
+    WHERE id = OLD.id_edificio;
+END;
+//
+DELIMITER ;
+
+-- Trigger para calcular el total a pagar al matricular a un alumno
+DELIMITER //
+CREATE TRIGGER before_insert_matricula
+BEFORE INSERT ON matriculas
+FOR EACH ROW
+BEGIN
+    DECLARE capacidad_saloon INT;
+
+    SELECT capacidad INTO capacidad_saloon
+    FROM salones
+    WHERE id = (SELECT id_salon FROM asignaturas WHERE id = NEW.id_asignatura);
+
+    IF capacidad_saloon IS NOT NULL AND capacidad_saloon <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El salón seleccionado no tiene capacidad suficiente.';
+    END IF;
+END;
+//
+DELIMITER ;
+
+-- Trigger para actualizar automáticamente el número de lugares disponibles en una asignatura después de una matrícula
+DELIMITER //
+CREATE TRIGGER after_insert_matricula
+AFTER INSERT ON matriculas
+FOR EACH ROW
+BEGIN
+    UPDATE asignaturas
+    SET lugares_disponibles = lugares_disponibles - 1
+    WHERE id = (SELECT id_asignatura FROM curso WHERE id = NEW.id_curso);
+END;
+//
+DELIMITER ;
+
+-- Trigger para validar la edad mínima de los alumnos al matricularse
+DELIMITER //
+CREATE TRIGGER before_insert_alumno
+BEFORE INSERT ON alumnos
+FOR EACH ROW
+BEGIN
+    DECLARE edad_minima INT;
+
+    SELECT nivel INTO edad_minima
+    FROM programas
+    WHERE id = (SELECT id_programa FROM asignaturas WHERE id = (SELECT id_asignatura FROM curso WHERE id = NEW.id_curso));
+
+    IF TIMESTAMPDIFF(YEAR, NEW.f_nacimiento, CURDATE()) < edad_minima THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El alumno no cumple con la edad mínima requerida para matricularse en el programa.';
+    END IF;
+END;
+//
+DELIMITER ;
+
+-- Trigger para calcular el total a pagar al matricular a un alumno
+
+DELIMITER //
+CREATE TRIGGER before_insert_tarifa
+BEFORE INSERT ON tarifas
+FOR EACH ROW
+BEGIN
+    DECLARE total_pago DOUBLE;
+
+    SELECT valorcredito INTO total_pago
+    FROM creditos
+    WHERE id = (SELECT id_creditos FROM asignaturas WHERE id = (SELECT id_asignatura FROM curso WHERE id = NEW.id_curso));
+
+    SET NEW.valor = total_pago;
+END;
+//
+DELIMITER ;
+
+-- Trigger para validar la edad mínima al insertar o actualizar una persona
+DELIMITER //
+CREATE TRIGGER before_insert_update_persona
+BEFORE INSERT OR UPDATE ON persona
+FOR EACH ROW
+BEGIN
+    DECLARE edad_minima INT;
+
+    -- Establecer la edad mínima requerida
+    SET edad_minima = 15;
+
+    IF TIMESTAMPDIFF(YEAR, NEW.f_nacimiento, CURDATE()) < edad_minima THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La persona no cumple con la edad mínima requerida.';
+    END IF;
+END;
+//
+DELIMITER ;
+
+-- Trigger para auditar cambios en la tabla persona
+DELIMITER //
+CREATE TRIGGER after_update_persona
+AFTER UPDATE ON persona
+FOR EACH ROW
+BEGIN
+    INSERT INTO auditoria_persona (accion, id_persona, fecha_modificacion)
+    VALUES ('UPDATE', NEW.id, NOW());
+END;
+//
+DELIMITER ;
+
+-- Trigger para validar el formato del número de teléfono al insertar o actualizar una persona
+DELIMITER //
+CREATE TRIGGER before_insert_update_telefono
+BEFORE INSERT OR UPDATE ON persona
+FOR EACH ROW
+BEGIN
+    IF LENGTH(NEW.telefono) <> 10 OR NEW.telefono NOT REGEXP '^[0-9]+$' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El número de teléfono debe tener 10 dígitos y solo números.';
+    END IF;
+END;
+//
+DELIMITER ;
+
+-- Trigger para evitar solapamiento de horarios
+DELIMITER //
+CREATE TRIGGER before_insert_update_horario
+BEFORE INSERT OR UPDATE ON horarios
+FOR EACH ROW
+BEGIN
+    DECLARE solapamiento INT;
+
+    -- Verificar si hay solapamiento con horarios existentes
+    SELECT COUNT(*)
+    INTO solapamiento
+    FROM horarios
+    WHERE NEW.dia = dia
+        AND ((NEW.hora_inicio BETWEEN hora_inicio AND hora_fin) OR (NEW.hora_fin BETWEEN hora_inicio AND hora_fin));
+
+    IF solapamiento > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El nuevo horario se solapa con horarios existentes.';
+    END IF;
+END;
+//
+DELIMITER ;
